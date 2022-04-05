@@ -1,4 +1,3 @@
-
 class Robots():
     def __init__(self, nombre, tipo, capacidad):
         self.nombre = nombre
@@ -6,17 +5,25 @@ class Robots():
         self.capacidad = capacidad
         self.siguiente = None
         self.anterior = None
-  
-
+        
 class ListaRobots(object):
     def __init__(self):
         self.cabeza =  None
         self.cola = None
         self.contador = 0
+        self.ContadorChapinRescue = 0
+        self.ContadorChapinFighter = 0
 
+    def recorrer(self):
+        actual = self.cabeza
+        
+        while actual is not None:
+            print(actual.nombre)
+            actual = actual.siguiente
+        print(self.contador)
 
-    def insertar(self,  nodo):
-        nodo = nodo
+    def insertar(self, nombre, tipo, capacidad):
+        nodo = Robots(nombre, tipo, capacidad)
 
         if self.cabeza is None:
             self.cabeza = nodo
@@ -27,35 +34,12 @@ class ListaRobots(object):
             self.cola = nodo
         
         self.contador += 1
+        if nodo.tipo == "ChapinRescue":
+            self.ContadorChapinRescue += 1
+        elif nodo.tipo == "ChapinFighter":
+            self.ContadorChapinFighter += 1
 
-    
-    def recorrer(self):
-        actual = self.cabeza
         
-        while actual:
-            print(actual.nombre)
-            actual.patrones.recorrer()
-            actual = actual.siguiente
     
-    def recorrermenu(self):
-        actual =self.cabeza
-        i=1
-        SeleccionarPiso = ""
-        print("======Menu Pisos======")
-        while actual:
-            print(" ",actual.nombre)
-            i+=1
-            actual = actual.siguiente
-        print(" exit. Regresar al menu principal")
-        SeleccionarPiso = input("Ingrese el nombre del piso a graficar: ")
-        actual = self.cabeza
 
-        while actual:
-            if SeleccionarPiso == actual.nombre:
-                actual.patrones.cabeza.casillas.graficar()
-                actual.patrones.recorrermenu()
-            elif SeleccionarPiso == "exit":
-               exit
-            else:
-                "Ingrese una entrada válida"
-            actual = actual.siguiente
+        

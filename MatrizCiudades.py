@@ -2,6 +2,8 @@ from ListaCabecera import Nodo_Cabecera
 from ListaCabecera import Lista_Cabecera
 import os
 import webbrowser
+from os import startfile
+import cv2  
 
 # -----------------------------Codigo de MATRIZ DISPERSA ----------------
 # -------- Clase NodoOrtogonal, con 4 apuntadores -> Nodos Internos
@@ -55,6 +57,7 @@ class MatrizCiudades():
         self.capa = 0
         self.filas = Lista_Cabecera('fila')
         self.columnas = Lista_Cabecera('columna')
+        self.ContadorUnidadCivil = 0
 
     # (filas = x, columnas = y)
     def insertar(self, pos_x, pos_y, tipo):
@@ -156,17 +159,17 @@ class MatrizCiudades():
             tmp = tmp.getAbajo()
 
 
-    def ubicarCoordenada(self, fila, columna):
-        try:
-            tmp : Nodo_Celda = self.filas.getCabecera(fila).getAcceso()
-            while tmp != None:
-                if tmp.coordenadaX == fila and tmp.coordenadaY == columna:
-                    return tmp
-                tmp = tmp.getDerecha()
-            return None
-        except:
-            print('Coordenada no encontrada')
-            return None
+    def ubicarCoordenada(self, fila, columna, tipo):
+        
+            Nodo = self.filas.getCabecera(fila).getAcceso()
+            while Nodo != None:
+                if Nodo.coordenadaX == fila and Nodo.coordenadaY == columna:
+                    Nodo.tipo = tipo
+                    Nodo.fila = fila
+                    Nodo.columna = columna
+                    print("Renombrado")
+                Nodo = Nodo.getDerecha()
+        
 
 
     def graficarNeato(self, nombre):
@@ -175,7 +178,7 @@ class MatrizCiudades():
     edge[style = "bold"]
     node[label = "capa:''' + str(self.capa) +'''" fillcolor="darkolivegreen1" pos = "-1,1!"]raiz;'''
         contenido += '''label = "{}" \nfontname="Arial Black" \nfontsize="25pt" \n
-                    \n'''.format('\nMATRIZ DISPERSA')
+                    \n'''.format('\n'+nombre)
 
         # --graficar nodos CABECERA
         # --graficar nodos fila
@@ -221,12 +224,36 @@ class MatrizCiudades():
                     if pivotey.id == pivote_celda.coordenadaY: break
                     posy_celda += 1
                     pivotey = pivotey.siguiente
-                if pivote_celda.tipo == '*':
+                if pivote_celda.tipo == 'Intransitable':
                     contenido += '\n\tnode[label="*" fillcolor="black" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
                         posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
                     )
+                elif pivote_celda.tipo == 'Transitable':
+                    contenido += '\n\tnode[label="*" fillcolor="white" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
+                        posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
+                    )
+                elif pivote_celda.tipo == 'Transitable':
+                    contenido += '\n\tnode[label="*" fillcolor="white" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
+                        posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
+                    )
+                elif pivote_celda.tipo == 'Entrada':
+                    contenido += '\n\tnode[label="*" fillcolor="green" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
+                        posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
+                    )
+                elif pivote_celda.tipo == 'unidadCivil':
+                    contenido += '\n\tnode[label="*" fillcolor="blue" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
+                        posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
+                    )
+                elif pivote_celda.tipo == 'Recurso':
+                    contenido += '\n\tnode[label="*" fillcolor="lightgrey" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
+                        posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
+                    )
+                elif pivote_celda.tipo == 'unidadMilitar':
+                    contenido += '\n\tnode[label="*" fillcolor="red" pos="{},-{}!" shape=box]i{}_{};'.format( #pos="{},-{}!"
+                        posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
+                    )
                 else:
-                    contenido += '\n\tnode[label=" " fillcolor="white" pos="{},-{}!" shape=box]i{}_{};'.format( # pos="{},-{}!"
+                    contenido += '\n\tnode[label="U" fillcolor="pink" pos="{},-{}!" shape=box]i{}_{};'.format( # pos="{},-{}!"
                         posy_celda, posx, pivote_celda.coordenadaX, pivote_celda.coordenadaY
                     ) 
                 pivote_celda = pivote_celda.derecha
@@ -264,6 +291,6 @@ class MatrizCiudades():
         dot = "matriz_{}_dot.txt".format(nombre)
         with open(dot, 'w') as grafo:
             grafo.write(contenido)
-        result = "matriz_{}.pdf".format(nombre)
-        os.system("neato -Tpdf " + dot + " -o " + result)
-        webbrowser.open(result)  
+        result = "matriz_{}.png".format(nombre)
+        os.system("neato -Tpng " + dot + " -o " + result)
+        #startfile(result) 

@@ -1,8 +1,8 @@
 class UnidadMilitar():
-    def __init__(self, nombre, tipo, capacidad):
-        self.nombre = nombre
-        self.tipo = tipo
-        self.capacidad = capacidad
+    def __init__(self, fila, columna, Combate):
+        self.fila = fila
+        self.columna = columna
+        self.Combate = Combate
         self.siguiente = None
         self.anterior = None
   
@@ -14,8 +14,8 @@ class ListaUnidades(object):
         self.contador = 0
 
 
-    def insertar(self,  nombre, tipo, capacidad):
-        nodo = UnidadMilitar(nombre, tipo, capacidad)
+    def insertar(self,  fila, columna, Combate):
+        nodo = UnidadMilitar(fila, columna, Combate)
 
         if self.cabeza is None:
             self.cabeza = nodo
@@ -26,3 +26,10 @@ class ListaUnidades(object):
             self.cola = nodo
         
         self.contador += 1
+    
+    def recorrer(self):
+        actual = self.cabeza
+        
+        while actual is not None:
+            print(actual.nombre)
+            actual = actual.siguiente

@@ -6,14 +6,21 @@ from tkinter import ttk
 from tkinter import messagebox
 from ListaUnidades import ListaUnidades, UnidadMilitar
 from ListaRobots import ListaRobots, Robots
+from MatrizCiudades import MatrizCiudades
+
+global listarobots
 
 listaciudades = ListaCiudades()
 listarobots = ListaRobots()
+matrizciudades = MatrizCiudades()
 CargarArchivo = False
 global VentanaPrincipal
 
+
+
 def LeerXml():
     global CargarArchivo
+    global listarobots
     archivoinput = askopenfilename(filetypes=[("Archivos XML", ".xml"), ("All Files", ".*")])
     xmlentrada = ET.parse(archivoinput)
     raizxml = xmlentrada.getroot()
@@ -21,8 +28,9 @@ def LeerXml():
     for hijo in raizxml:
         
         if hijo.tag == 'listaCiudades':
+            
             for subhijo in hijo:
-                
+                ContadorUnidadCivil = 0
                 for subhijo2 in subhijo:
                     if subhijo2.tag == 'nombre':
                         filas = subhijo2.attrib['filas']
@@ -35,22 +43,26 @@ def LeerXml():
                         Cadena = Cadena.replace('"', '')
                         
                         ContadorColumns = 1
-                        C = 0
+                        
                         for i in Cadena:
-                            if Cadena[C] == '*':
+                            if i== '*':
                                 nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "Intransitable")
-                                    
-                            elif Cadena[C] == ' ':
+                                ContadorColumns += 1
+                            elif i == ' ':
                                 nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "Transitable")
-                                    
-                            elif Cadena[C] == 'E':
+                                ContadorColumns += 1  
+                            elif i == 'E':
                                 nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "Entrada")
-                                    
-                            elif Cadena[C] == 'C':
+                                ContadorColumns += 1
+                            elif i == 'C':
                                 nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "unidadCivil")
-                                    
-                            elif Cadena[C] == 'R':
-                                nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "Recurso")   
+                                ContadorUnidadCivil += 1
+                                ContadorColumns += 1
+                                nodo.ContadorUnidadCivil = ContadorUnidadCivil
+                            
+                            elif i == 'R':
+                                nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "Recurso")
+                                ContadorColumns += 1 
                               
                         
 
@@ -61,13 +73,14 @@ def LeerXml():
                         columna = int(columna)
                         Combate = subhijo2.text
                         Combate = int(Combate)
-                        nodo.MatrizCiudades.insertar(fila, columna, "unidadMilitar") 
+                        #print(fila, columna, "Unidad Militar")
+                        nodo.MatrizCiudades.ubicarCoordenada(fila, columna,"unidadMilitar") #Ubica la coordena de Unidad Militar y la pone None
+                        #nodo.MatrizCiudades.insertar(fila, columna, "unidadMilitar") 
                         nodo.ListaUnidades.insertar(fila, columna, Combate)
 
-                print(nombre)
                 listaciudades.insertar(nodo)
                 
-        elif hijo.tag == 'Robots':
+        elif hijo.tag == 'robots':
             for subhijo in hijo:
                 for subhijo2 in subhijo:
                     tipo = subhijo2.attrib['tipo']
@@ -76,51 +89,34 @@ def LeerXml():
                     except:
                         capacidad = None
                     nombre = subhijo2.text
-                    nodo2 = Robots(tipo, capacidad, nombre)
-                    listarobots.insertar(nodo2)
+                    listarobots.insertar(nombre, tipo, capacidad)
     CargarArchivo = True
     print("Se ha cargado el XML")
 
-def MisionRescate():
-    print("Mision de Rescate")
-
-def MisionExtraccion():
-    print("Mision de Extracción de Recursos")
 
 
-def NuevaMision():
-    global VentanaPrincipal
-    global CargarArchivo
+
+
+def ElegirCiudad():
+    global listarobots
     if CargarArchivo == True:
-        VentanaPrincipal.destroy()
-        VentanaNuevaMision = Tk()
-        VentanaNuevaMision.title("Nueva Mision")
-        VentanaNuevaMision.geometry("300x300")
-        VentanaNuevaMision.config(bg = "SkyBlue1")
         
-        Label(VentanaNuevaMision, text = "Menú Misiones", font=("Arial", 16, "italic"),  bg="SkyBlue1").grid(pady=50, row=0, column=0)
-        Button(VentanaNuevaMision, text="Misión de Rescate", width=30, height=1, font=("Arial", 12, "italic"), command=MisionRescate).grid(pady=5,padx=5, row=1, column=0)
-        Button(VentanaNuevaMision, text="Misión de Extracción de Recursos", width=30, height=1, font=("Arial", 12, "italic"), command=MisionExtraccion).grid(pady=5,padx=5, row=2, column=0)
-        VentanaNuevaMision.mainloop()
+        listaciudades.elegirciudad(listarobots)
     else:
-        VentanaPrincipal.destroy()
         messagebox.showinfo("Error", "No se ha cargado el archivo XML")
-        Menu()
         
 
-def Menu():
-    global VentanaPrincipal
-    VentanaPrincipal = Tk()
-    VentanaPrincipal.title("Chapín Warriors, S. A.")
-    VentanaPrincipal.config(bg="SkyBlue1")
-    VentanaPrincipal.geometry("300x300")
 
-    Label(VentanaPrincipal, text = "Chapín Warriors, S. A.", font=("Arial", 16, "italic"),  bg="SkyBlue1").grid(pady=50, row=0, column=0)
-    Button(VentanaPrincipal, text="Cargar Archivo", width=30, height=1, font=("Arial", 12, "italic"), command=LeerXml).grid(pady=5,padx=5, row=1, column=0)
-    Button(VentanaPrincipal, text="Nueva Misión", width=30, height=1, font=("Arial", 12, "italic"), command=NuevaMision).grid(pady=5,padx=5, row=2, column=0)
+VentanaPrincipal = Tk()
+VentanaPrincipal.title("Chapín Warriors, S. A.")
+VentanaPrincipal.config(bg="SkyBlue1")
+VentanaPrincipal.geometry("300x300")
+
+Label(VentanaPrincipal, text = "Chapín Warriors, S. A.", font=("Arial", 16, "italic"),  bg="SkyBlue1").grid(pady=50, row=0, column=0)
+Button(VentanaPrincipal, text="Cargar Archivo", width=30, height=1, font=("Arial", 12, "italic"), command=LeerXml).grid(pady=5,padx=5, row=1, column=0)
+Button(VentanaPrincipal, text="Nueva Misión", width=30, height=1, font=("Arial", 12, "italic"), command=ElegirCiudad).grid(pady=5,padx=5, row=2, column=0)
 
 
-    VentanaPrincipal.mainloop()
+VentanaPrincipal.mainloop()
 
-Menu()
 
