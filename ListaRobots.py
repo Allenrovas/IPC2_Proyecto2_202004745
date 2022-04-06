@@ -1,3 +1,4 @@
+
 class Robots():
     def __init__(self, nombre, tipo, capacidad):
         self.nombre = nombre
@@ -14,13 +15,37 @@ class ListaRobots(object):
         self.ContadorChapinRescue = 0
         self.ContadorChapinFighter = 0
 
-    def recorrer(self):
+    def recorrerRescate(self):
         actual = self.cabeza
-        
+        ultimo = self.cola
+        Nombre = ""
         while actual is not None:
-            print(actual.nombre)
+            if actual.tipo == "ChapinRescue":
+                if ultimo == actual:
+                    Nombre += actual.nombre
+                else:
+                    Nombre += actual.nombre +","
+            else: 
+                pass
             actual = actual.siguiente
-        print(self.contador)
+        return Nombre
+    
+    def recorrerRecursos(self):
+        actual = self.cabeza
+        ultimo = self.cola
+        Nombre = ""
+        while actual is not None:
+            if actual.tipo == "ChapinFighter":
+                if ultimo == actual:
+                    Nombre += actual.nombre
+                else:
+                    Nombre += actual.nombre +","
+            else: 
+                pass
+            actual = actual.siguiente
+        return Nombre
+    
+    
 
     def insertar(self, nombre, tipo, capacidad):
         nodo = Robots(nombre, tipo, capacidad)

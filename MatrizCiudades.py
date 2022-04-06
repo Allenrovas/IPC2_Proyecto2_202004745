@@ -133,6 +133,61 @@ class MatrizCiudades():
                             tmp2 = tmp2.getAbajo()
         ##------ Fin de insercion
 
+    def ubicarRecursos(self):
+        Contador = 1
+        posicion = ""
+        while True:
+            inicio : Nodo_Cabecera = self.filas.getCabecera(Contador)
+            if inicio == None:
+                print('Esa coordenada de filas no existe')
+                break
+                
+            tmp : Nodo_Celda = inicio.getAcceso()
+            #tmp = self.filas.getCabecera(fila).getAcceso()
+            while tmp != None:
+                if tmp.tipo == 'Recurso':
+                    posicion += str(tmp.coordenadaX)+","+str(tmp.coordenadaY)+";"
+                tmp = tmp.getDerecha()
+            Contador += 1
+            
+        return posicion
+    
+    def ubicarUnidadCivil(self):
+        Contador = 1
+        posicion = ""
+        while True:
+            inicio : Nodo_Cabecera = self.filas.getCabecera(Contador)
+            if inicio == None:
+                print('Esa coordenada de filas no existe')
+                break
+            tmp : Nodo_Celda = inicio.getAcceso()
+            #tmp = self.filas.getCabecera(fila).getAcceso()
+            while tmp != None:
+                if tmp.tipo == 'unidadCivil':
+                    posicion += str(tmp.coordenadaX)+","+str(tmp.coordenadaY)+";"
+                tmp = tmp.getDerecha()
+            Contador += 1 
+        return posicion
+    
+    def ubicarEntrada(self):
+        Contador = 1
+        posicion = ""
+        while True:
+            inicio : Nodo_Cabecera = self.filas.getCabecera(Contador)
+            if inicio == None:
+                print('Esa coordenada de filas no existe')
+                break
+                
+            tmp : Nodo_Celda = inicio.getAcceso()
+            #tmp = self.filas.getCabecera(fila).getAcceso()
+            while tmp != None:
+                if tmp.tipo == 'Entrada':
+                    posicion += str(tmp.coordenadaX)+","+str(tmp.coordenadaY)+";"
+                tmp = tmp.getDerecha()
+            Contador += 1
+            
+        return posicion
+
     def recorridoPorFila(self, fila):
         inicio : Nodo_Cabecera = self.filas.getCabecera(fila)
         if inicio == None:
@@ -169,6 +224,8 @@ class MatrizCiudades():
                     Nodo.columna = columna
                     print("Renombrado")
                 Nodo = Nodo.getDerecha()
+    
+    
         
 
 

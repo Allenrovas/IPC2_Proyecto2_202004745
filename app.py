@@ -12,14 +12,15 @@ global listarobots
 
 listaciudades = ListaCiudades()
 listarobots = ListaRobots()
-matrizciudades = MatrizCiudades()
 CargarArchivo = False
 global VentanaPrincipal
+ContadorCarga = 0
 
 
 
 def LeerXml():
     global CargarArchivo
+    global ContadorCarga
     global listarobots
     archivoinput = askopenfilename(filetypes=[("Archivos XML", ".xml"), ("All Files", ".*")])
     xmlentrada = ET.parse(archivoinput)
@@ -31,6 +32,7 @@ def LeerXml():
             
             for subhijo in hijo:
                 ContadorUnidadCivil = 0
+                ContadorUnidadMilitar = 0
                 for subhijo2 in subhijo:
                     if subhijo2.tag == 'nombre':
                         filas = subhijo2.attrib['filas']
@@ -62,7 +64,9 @@ def LeerXml():
                             
                             elif i == 'R':
                                 nodo.MatrizCiudades.insertar(int(NumeroFila), int(ContadorColumns), "Recurso")
-                                ContadorColumns += 1 
+                                ContadorColumns += 1
+                                ContadorUnidadMilitar += 1
+                                nodo.ContadorUnidadMilitar = ContadorUnidadMilitar
                               
                         
 
@@ -73,6 +77,7 @@ def LeerXml():
                         columna = int(columna)
                         Combate = subhijo2.text
                         Combate = int(Combate)
+                        
                         #print(fila, columna, "Unidad Militar")
                         nodo.MatrizCiudades.ubicarCoordenada(fila, columna,"unidadMilitar") #Ubica la coordena de Unidad Militar y la pone None
                         #nodo.MatrizCiudades.insertar(fila, columna, "unidadMilitar") 
@@ -91,6 +96,11 @@ def LeerXml():
                     nombre = subhijo2.text
                     listarobots.insertar(nombre, tipo, capacidad)
     CargarArchivo = True
+    ContadorCarga +=1
+    
+
+
+        
     print("Se ha cargado el XML")
 
 
@@ -98,10 +108,10 @@ def LeerXml():
 
 
 def ElegirCiudad():
+    global ContadorCarga 
     global listarobots
     if CargarArchivo == True:
-        
-        listaciudades.elegirciudad(listarobots)
+        listaciudades.elegirciudad(listarobots, ContadorCarga)
     else:
         messagebox.showinfo("Error", "No se ha cargado el archivo XML")
         
